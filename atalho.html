@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Atalho Custo 3D</title>
+<meta name="theme-color" content="#e0531f">
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --fg:#17202a; --muted:#5c6773; --line:#d6dce3;
+  --accent:#e0531f; --accent-soft:#fde6dc; --ok:#1d7a4f; --warn:#b4560f;
+  --f-display:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#12161b; --surface:#1b2128; --fg:#e8edf2; --muted:#9aa5b1; --line:#2c353f;
+  --accent:#ff7a45; --accent-soft:#3a2118; --ok:#5cc58f; --warn:#f0a35e; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:720px;margin:0 auto;display:grid;gap:16px}
+a{color:var(--accent)}
+h1{font-family:var(--f-display);font-size:1.6rem;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:1.1rem;margin:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+p{margin:0}
+.lead{color:var(--muted);max-width:62ch}
+.layers{height:10px;width:120px;border-radius:2px;background:repeating-linear-gradient(0deg,var(--accent) 0 2px,transparent 2px 4px);opacity:.55}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px;min-width:0}
+.chip{font:600 .72rem var(--f-body);padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+ol{margin:0;padding-left:1.3em;display:grid;gap:8px}
+ol li::marker{font-family:var(--f-mono);color:var(--accent)}
+b.ui{font-weight:600;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:0 6px;white-space:nowrap}
+.code{position:relative;min-width:0}
+pre{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;max-height:220px;overflow:auto;font:12px/1.45 var(--f-mono);white-space:pre}
+button{font:600 .9rem var(--f-body);border-radius:8px;padding:10px 14px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.status{font-size:.85rem;color:var(--ok);min-height:1.2em}
+.hint{font-size:.85rem;color:var(--muted)}
+.back{font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">← Voltar para a calculadora</a>
+  <header style="display:grid;gap:6px">
+    <div class="layers" aria-hidden="true"></div>
+    <h1>Atalho Custo 3D</h1>
+    <p class="lead">Abra um modelo no MakerWorld, Printables ou Thingiverse, toque em Compartilhar e escolha <b>Custo 3D</b>. A calculadora abre com o nome, o peso e o tempo da página já preenchidos.</p>
+  </header>
+
+  <section class="card">
+    <h2>Opção 1: Atalho do iPhone <span class="chip">recomendado</span></h2>
+    <ol>
+      <li>Em <b class="ui">Ajustes</b>, abra <b class="ui">Apps → Atalhos → Avançado</b> e ative <b class="ui">Permitir Execução de Scripts</b>.</li>
+      <li>No app <b class="ui">Atalhos</b>, toque em <b class="ui">+</b> para criar um atalho e dê o nome <b>Custo 3D</b>.</li>
+      <li>Toque no ícone <b class="ui">ⓘ</b> e ative <b class="ui">Mostrar na Folha de Compartilhamento</b>. Deixe a entrada como <b>Páginas web do Safari</b>.</li>
+      <li>Adicione a ação <b class="ui">Executar JavaScript na Página Web</b>. Apague o código de exemplo e cole o código abaixo.</li>
+      <li>Adicione a ação <b class="ui">Abrir URLs</b>. Ela usa o resultado do JavaScript automaticamente.</li>
+    </ol>
+    <div class="code"><pre id="code">Carregando…</pre></div>
+    <div><button id="copyCode" type="button">Copiar código do atalho</button></div>
+    <p id="st1" class="status" role="status"></p>
+    <p class="hint">Na primeira vez em cada site, o iPhone pergunta se o atalho pode acessar a página. Toque em Permitir.</p>
+  </section>
+
+  <section class="card">
+    <h2>Opção 2: Favorito no Safari</h2>
+    <ol>
+      <li>Toque em <b class="ui">Copiar favorito</b>.</li>
+      <li>No Safari, salve esta página nos Favoritos (Compartilhar → Adicionar Favorito).</li>
+      <li>Abra os Favoritos, toque em <b class="ui">Editar</b>, escolha o favorito criado, troque o nome para <b>Custo 3D</b> e substitua o endereço pelo texto copiado.</li>
+      <li>Na página do modelo, abra os Favoritos e toque em <b>Custo 3D</b>.</li>
+    </ol>
+    <div><button id="copyBm" type="button">Copiar favorito</button></div>
+    <p id="st2" class="status" role="status"></p>
+  </section>
+
+  <section class="card">
+    <h2>Quando não acha os valores</h2>
+    <p class="hint">Cada site mostra o tempo e o peso de um jeito. Se a calculadora abrir sem os números, selecione na página o trecho com o tempo e o filamento e rode o atalho de novo: o texto selecionado tem prioridade. Confira sempre se o perfil importado é o da sua impressora.</p>
+  </section>
+</div>
+<script>
+(function(){
+  let src="";
+  const pre=document.getElementById("code");
+  fetch("importar.js",{cache:"no-store"}).then(r=>r.text()).then(t=>{src=t;pre.textContent=t}).catch(()=>{pre.textContent="Não consegui carregar o código. Recarregue a página."});
+  function bookmarklet(){
+    const body=src.replace(/\/\*[\s\S]*?\*\//g,"").split("\n").map(l=>l.trim()).filter(Boolean).join(" ");
+    return "javascript:"+body;
+  }
+  async function copy(text,statusId){
+    const st=document.getElementById(statusId);
+    if(!src){st.textContent="Aguarde o código carregar.";return}
+    try{await navigator.clipboard.writeText(text);st.textContent="Copiado."}
+    catch(e){
+      const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();
+      try{document.execCommand("copy");st.textContent="Copiado."}catch(_){st.textContent="Não consegui copiar. Selecione o texto e copie à mão."}
+      ta.remove();
+    }
+  }
+  document.getElementById("copyCode").addEventListener("click",()=>copy(src,"st1"));
+  document.getElementById("copyBm").addEventListener("click",()=>copy(bookmarklet(),"st2"));
+})();
+</script>
+</body>
+</html>

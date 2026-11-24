@@ -121,6 +121,7 @@ details.card>div{display:grid;gap:14px;margin-top:4px}
           <button id="btnPasteRead" type="button">Colar e ler</button>
         </div>
         <p id="impStatus" class="status" role="status"></p>
+        <p class="hint"><a href="atalho.html">Configurar o atalho do iPhone</a> para importar direto da página do modelo, sem copiar nada.</p>
         <div class="links">
           <a href="https://makerworld.com" target="_blank" rel="noopener">makerworld.com</a>
           <a href="https://www.printables.com" target="_blank" rel="noopener">printables.com</a>
@@ -398,6 +399,33 @@ pieces=lsGet("c3d.pieces")||[];
 applySettings();
 fillPiece(lsGet("c3d.draft")||EXAMPLE);
 render();renderSaved();
+importFromUrl();
+
+/* ---- Importação pelo Atalho do iPhone (?g=&min=&n=&src=&txt=) ---- */
+function importFromUrl(){
+  let q;try{q=new URLSearchParams(location.search)}catch(e){return}
+  if(![...q.keys()].length)return;
+  const n=(q.get("n")||"").trim().slice(0,80);
+  const src=(q.get("src")||"").replace(/^www\./,"").slice(0,60);
+  let grams=parseFloat(q.get("g")), minutes=parseFloat(q.get("min"));
+  const txt=q.get("txt")||"";
+  if(txt&&(!isFinite(grams)||!isFinite(minutes))){
+    const r=parseText(txt);
+    if(!isFinite(grams)&&r.grams!=null)grams=r.grams;
+    if(!isFinite(minutes)&&r.minutes!=null)minutes=r.minutes;
+    $("paste").value=txt;
+  }
+  if(n)$("name").value=n;
+  if(!isFinite(grams))$("grams").value="";
+  if(!isFinite(minutes)){$("hours").value="";$("mins").value=""}
+  const got=applyFound(isFinite(minutes)?minutes:null,isFinite(grams)?grams:null);
+  const from=src?` de ${src}`:"";
+  if(got.length===2)setStatus("impStatus",`Importado${from}: ${got.join(" · ")}. Confira com o perfil que você vai imprimir.`,"ok");
+  else if(got.length)setStatus("impStatus",`Importado${from} só ${got[0]}. Preencha o outro valor à mão.`,"err");
+  else setStatus("impStatus",`Não achei peso nem tempo na página${from}. Selecione o trecho com os números antes de rodar o atalho.`,"err");
+  try{history.replaceState(null,"",location.pathname)}catch(e){}
+  document.getElementById("h-imp").scrollIntoView({block:"start"});
+}
 })();
 </script>
 </body>
