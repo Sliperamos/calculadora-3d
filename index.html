@@ -71,8 +71,8 @@ button:disabled{opacity:.5;cursor:default}
 .total{display:grid;gap:2px}
 .total .lbl{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
 .total .big{font:700 2.3rem/1.1 var(--f-display);font-variant-numeric:tabular-nums}
-.price{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:12px;border-top:1px solid var(--line)}
-.price .big{font-size:1.5rem;color:var(--accent)}
+.price{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;padding-top:12px;border-top:1px solid var(--line)}
+.price .big{font-size:clamp(1.05rem,4.6vw,1.5rem);color:var(--accent);white-space:nowrap}
 .stack{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line)}
 .stack i{display:block;height:100%}
 table.bd{width:100%;border-collapse:collapse;font-size:.9rem}
@@ -86,6 +86,11 @@ details.card summary::after{content:"+";font-family:var(--f-mono);color:var(--mu
 details[open].card summary::after{content:"–"}
 details.card>div{display:grid;gap:14px;margin-top:4px}
 .sub{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;margin:4px 0 -4px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kv div{display:grid;gap:2px;min-width:0}
+.kv .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.kv .v{font:700 1.25rem/1.2 var(--f-display);font-variant-numeric:tabular-nums}
+.kv small{color:var(--muted);font-size:.8rem}
 .saved{display:grid;gap:8px}
 .item{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
 .item .nm{flex:1;min-width:0}
@@ -97,7 +102,7 @@ details.card>div{display:grid;gap:14px;margin-top:4px}
 .chip{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:600}
 .links{display:flex;gap:8px;flex-wrap:wrap;font-size:.85rem}
 .links a{color:var(--accent)}
-@media (max-width:420px){.grid3{grid-template-columns:1fr 1fr}.total .big{font-size:2rem}}
+@media (max-width:420px){.grid3{grid-template-columns:1fr 1fr}#rTotal{font-size:2rem}}
 @media (prefers-reduced-motion:no-preference){.stack i{transition:width .25s ease}}
 </style>
 
@@ -141,22 +146,35 @@ details.card>div{display:grid;gap:14px;margin-top:4px}
           <label class="f">Seu trabalho<div class="inp"><input id="labor" type="number" inputmode="numeric" min="0" step="1"><span>min</span></div></label>
           <label class="f">Extras (ímãs, tinta…)<div class="inp"><span>R$</span><input id="extras" type="number" inputmode="decimal" min="0" step="any"></div></label>
         </div>
+        <label class="f">Material<div class="inp"><select id="mat"></select></div></label>
+        <p class="hint">Peso e tempo de <b>uma</b> peça. O trabalho é por peça (tirar suporte, lixar, embalar).</p>
+      </section>
+
+      <section class="card" aria-labelledby="h-lote">
+        <h2 id="h-lote">Produção em lote <small>várias peças por mesa</small></h2>
         <div class="grid2">
-          <label class="f">Quantidade<div class="inp"><input id="qty" type="number" inputmode="numeric" min="1" step="1"><span>un.</span></div></label>
-          <label class="f">Material<div class="inp"><select id="mat"></select></div></label>
+          <label class="f">Quantidade total<div class="inp"><input id="qty" type="number" inputmode="numeric" min="1" step="1"><span>un.</span></div></label>
+          <label class="f">Peças por mesa<div class="inp"><input id="perPlate" type="number" inputmode="numeric" min="1" step="1"><span>un.</span></div></label>
         </div>
+        <div class="grid3">
+          <label class="f">Tempo da mesa cheia<div class="inp"><input id="plateH" type="number" inputmode="numeric" min="0" step="1" placeholder="auto"><span>h</span></div></label>
+          <label class="f">&nbsp;<div class="inp"><input id="plateM" type="number" inputmode="numeric" min="0" max="59" step="1" placeholder="auto"><span>min</span></div></label>
+          <label class="f">Troca de mesa<div class="inp"><input id="swap" type="number" inputmode="numeric" min="0" step="1"><span>min</span></div></label>
+        </div>
+        <p class="hint">Fatie a mesa cheia e informe o tempo total: com várias peças juntas a impressão costuma render mais. Em branco, a calculadora usa o tempo de uma peça vezes as peças da mesa.</p>
       </section>
 
       <details class="card" id="cfg">
         <summary>Minha impressora e custos</summary>
         <div>
           <p class="hint">Preencha uma vez. Os valores ficam salvos para as próximas peças.</p>
-          <p class="sub">Filamentos (R$ por rolo de 1 kg)</p>
+          <p class="sub">Filamentos (R$ por kg)</p>
           <div class="grid3">
             <label class="f">PLA<div class="inp"><input id="pPLA" type="number" inputmode="decimal" step="any"></div></label>
             <label class="f">PETG<div class="inp"><input id="pPETG" type="number" inputmode="decimal" step="any"></div></label>
             <label class="f">ABS/ASA<div class="inp"><input id="pABS" type="number" inputmode="decimal" step="any"></div></label>
             <label class="f">TPU<div class="inp"><input id="pTPU" type="number" inputmode="decimal" step="any"></div></label>
+            <label class="f">Peso do rolo<div class="inp"><input id="roll" type="number" inputmode="numeric" step="any"><span>g</span></div></label>
           </div>
           <p class="sub">Energia</p>
           <div class="grid2">
@@ -168,6 +186,11 @@ details.card>div{display:grid;gap:14px;margin-top:4px}
             <label class="f">Preço<div class="inp"><span>R$</span><input id="machine" type="number" inputmode="decimal" step="any"></div></label>
             <label class="f">Vida útil<div class="inp"><input id="life" type="number" inputmode="numeric" step="any"><span>h</span></div></label>
             <label class="f">Manutenção<div class="inp"><input id="maint" type="number" inputmode="decimal" step="any"><span>R$/h</span></div></label>
+          </div>
+          <p class="sub">Produção</p>
+          <div class="grid2">
+            <label class="f">Impressoras<div class="inp"><input id="printers" type="number" inputmode="numeric" min="1" step="1"><span>un.</span></div></label>
+            <label class="f">Rodam por dia<div class="inp"><input id="hpd" type="number" inputmode="numeric" min="1" max="24" step="any"><span>h</span></div></label>
           </div>
           <p class="sub">Venda</p>
           <div class="grid2">
@@ -197,6 +220,12 @@ details.card>div{display:grid;gap:14px;margin-top:4px}
         <p id="saveStatus" class="status" role="status"></p>
       </section>
 
+      <section class="card" aria-labelledby="h-prod" aria-live="polite">
+        <h2 id="h-prod">Linha de produção <small id="prodSub"></small></h2>
+        <div class="kv" id="prod"></div>
+        <p class="hint" id="prodNote"></p>
+      </section>
+
       <section class="card" aria-labelledby="h-saved">
         <h2 id="h-saved">Peças salvas <small>neste aparelho</small></h2>
         <div class="saved" id="saved"></div>
@@ -213,9 +242,10 @@ details.card>div{display:grid;gap:14px;margin-top:4px}
 <script>
 (function(){
 const MATS={PLA:"pPLA",PETG:"pPETG","ABS/ASA":"pABS",TPU:"pTPU"};
-const DEFAULTS={pPLA:120,pPETG:130,pABS:140,pTPU:180,watts:130,tariff:0.95,machine:2500,life:5000,maint:0.15,fail:10,rate:30,margin:80,fee:0};
-const EXAMPLE={name:"Exemplo: suporte de headset",grams:52,hours:4,mins:12,labor:15,extras:0,qty:1,mat:"PLA"};
-const PIECE=["name","grams","hours","mins","labor","extras","qty","mat"];
+const DEFAULTS={pPLA:120,pPETG:130,pABS:140,pTPU:180,watts:130,tariff:0.95,machine:2500,life:5000,maint:0.15,fail:10,rate:30,margin:80,fee:0,roll:1000,printers:1,hpd:12};
+const EXAMPLE={name:"Exemplo: suporte de headset",grams:52,hours:4,mins:12,labor:15,extras:0,qty:1,mat:"PLA",perPlate:1,plateH:"",plateM:"",swap:5};
+const PIECE=["name","grams","hours","mins","labor","extras","qty","mat","perPlate","plateH","plateM","swap"];
+const LOTE_DEF={qty:1,perPlate:1,plateH:"",plateM:"",swap:5};
 const $=id=>document.getElementById(id);
 const brl=v=>"R$ "+(isFinite(v)?v:0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=id=>{const v=parseFloat(String($(id).value).replace(",","."));return isFinite(v)?v:0};
@@ -230,35 +260,65 @@ function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 
 function applySettings(){Object.keys(DEFAULTS).forEach(k=>{$(k).value=settings[k]??DEFAULTS[k]})}
 function readSettings(){const s={};Object.keys(DEFAULTS).forEach(k=>s[k]=num(k));return s}
-function fillPiece(p){PIECE.forEach(k=>{if(p[k]!==undefined&&p[k]!==null)$(k).value=p[k]})}
-function readPiece(){return{name:$("name").value.trim(),grams:num("grams"),hours:num("hours"),mins:num("mins"),labor:num("labor"),extras:num("extras"),qty:Math.max(1,Math.round(num("qty"))||1),mat:matSel.value}}
+function fillPiece(p){p={...LOTE_DEF,...p};PIECE.forEach(k=>{if(p[k]!==undefined&&p[k]!==null)$(k).value=p[k]})}
+function readPiece(){return{name:$("name").value.trim(),grams:num("grams"),hours:num("hours"),mins:num("mins"),labor:num("labor"),extras:num("extras"),qty:Math.max(1,Math.round(num("qty"))||1),mat:matSel.value,
+  perPlate:Math.max(1,Math.round(num("perPlate"))||1),plateH:$("plateH").value,plateM:$("plateM").value,swap:num("swap")}}
 
 function compute(){
   const s=readSettings(), p=readPiece();
-  const h=p.hours+p.mins/60;
+  const h1=p.hours+p.mins/60;
+  const N=p.perPlate, Q=p.qty;
+  const plateGiven=($("plateH").value!==""||$("plateM").value!=="")&&(num("plateH")+num("plateM")/60)>0;
+  const plateTime=plateGiven?num("plateH")+num("plateM")/60:h1*N;
+  const fullPlates=Math.floor(Q/N), rem=Q%N, plates=fullPlates+(rem?1:0);
+  const h=fullPlates*plateTime+(rem?plateTime*rem/N:0);
   const pricePerKg=s[MATS[p.mat]]||0;
-  const fil=p.grams*pricePerKg/1000;
+  const gramsTotal=p.grams*Q;
+  const fil=gramsTotal*pricePerKg/1000;
   const energy=s.watts/1000*h*s.tariff;
   const dep=s.life>0?s.machine/s.life*h:0;
   const maint=s.maint*h;
   const base=fil+energy+dep+maint;
   const fail=base*s.fail/100;
-  const labor=p.labor/60*s.rate;
-  const extras=p.extras;
-  const unit=base+fail+labor+extras;
-  const total=unit*p.qty;
+  const laborMin=p.labor*Q+p.swap*plates;
+  const labor=laborMin/60*s.rate;
+  const extras=p.extras*Q;
+  const total=base+fail+labor+extras;
+  const unit=total/Q;
   const fee=Math.min(Math.max(s.fee,0),95)/100;
   const price=total*(1+s.margin/100)/(1-fee);
   const net=price*(1-fee);
+  const gramsNeed=gramsTotal*(1+s.fail/100);
+  const roll=s.roll>0?s.roll:1000;
+  const printers=Math.max(1,Math.round(s.printers)||1);
+  const hpd=Math.min(Math.max(s.hpd||24,1),24);
+  const wallH=h/printers;
+  const qtyTxt=Q>1?`${fmt(Q)} peças · `:"";
   return {p,s,h,parts:[
-    ["Filamento",fil,`${fmt(p.grams)} g de ${p.mat} a ${brl(pricePerKg)}/kg`,"--bar1"],
+    ["Filamento",fil,`${qtyTxt}${fmt(gramsTotal)} g de ${p.mat} a ${brl(pricePerKg)}/kg`,"--bar1"],
     ["Energia",energy,`${fmt(s.watts/1000*h,2)} kWh`,"--bar2"],
     ["Desgaste da impressora",dep,`${brl(s.life>0?s.machine/s.life:0)} por hora`,"--bar3"],
     ["Manutenção",maint,`${fmtH(h)} de máquina`,"--bar4"],
     ["Falhas",fail,`${fmt(s.fail)}% sobre os itens acima`,"--bar5"],
-    ["Seu trabalho e extras",labor+extras,`${fmt(p.labor)} min a ${brl(s.rate)}/h${extras?` + ${brl(extras)}`:""}`,"--bar6"]
-  ],unit,total,price,net,profit:net-total};
+    ["Seu trabalho e extras",labor+extras,`${fmtH(laborMin/60)} a ${brl(s.rate)}/h${plates>1||p.swap?` (inclui ${plates} troca${plates>1?"s":""} de mesa)`:""}${extras?` + ${brl(extras)}`:""}`,"--bar6"]
+  ],unit,total,price,net,profit:net-total,
+  prod:{Q,N,plates,fullPlates,rem,plateTime,plateGiven,h,gramsTotal,gramsNeed,roll,rolls:gramsNeed/roll,printers,hpd,wallH,days:wallH/hpd,mat:p.mat,h1}};
 }
+function renderProd(d){
+  const box=$("prod");box.textContent="";
+  const add=(lbl,v,sub)=>{const w=document.createElement("div");const a=document.createElement("span");a.className="lbl";a.textContent=lbl;
+    const b=document.createElement("span");b.className="v";b.textContent=v;w.append(a,b);
+    if(sub){const c=document.createElement("small");c.textContent=sub;w.appendChild(c)}box.appendChild(w)};
+  add("Mesas",fmt(d.plates),d.rem&&d.fullPlates?`${d.fullPlates} cheia${d.fullPlates>1?"s":""} de ${d.N} + 1 com ${d.rem}`:d.rem?`1 mesa com ${d.rem} peça${d.rem>1?"s":""}`:`${d.N} peça${d.N>1?"s":""} por mesa`);
+  add("Tempo de máquina",fmtH(d.h),`${fmtH(d.plateTime)} por mesa${d.plateGiven?"":" (estimado)"}`);
+  add("Filamento",fmtKg(d.gramsNeed),`${fmtKg(d.gramsTotal)} nas peças + falhas`);
+  add("Rolos de "+fmtKg(d.roll),fmt(d.rolls,2),`tenha ${Math.max(1,Math.ceil(d.rolls-1e-9))} rolo${Math.ceil(d.rolls-1e-9)>1?"s":""} de ${d.mat}`);
+  $("prodSub").textContent=d.printers>1?`${d.printers} impressoras`:"1 impressora";
+  const daysTxt=d.days<1?`${fmtH(d.wallH)} de impressão`:`${fmt(Math.round(d.days*10)/10)} dia${d.days>1?"s":""} rodando ${fmt(d.hpd)} h por dia`;
+  $("prodNote").textContent=`Fica pronto em cerca de ${daysTxt}${d.printers>1?`, dividindo entre ${d.printers} impressoras`:""}.`+
+    (d.N>1&&!d.plateGiven?" Fatie a mesa cheia e informe o tempo dela para uma estimativa mais precisa.":"");
+}
+function fmtKg(g){return g>=1000?fmt(g/1000,2)+" kg":fmt(g,0)+" g"}
 function fmt(v,d){return (+v||0).toLocaleString("pt-BR",{maximumFractionDigits:d??1})}
 function fmtH(h){const H=Math.floor(h),M=Math.round((h-H)*60);return `${H}h${M?(" "+M+"min"):""}`}
 
@@ -267,6 +327,7 @@ function render(){
   $("rTotal").textContent=brl(r.total);
   $("rPrice").textContent=brl(r.price);
   $("rNet").textContent=brl(r.net);
+  renderProd(r.prod);
   const chip=$("qtyChip");chip.hidden=r.p.qty<=1;chip.textContent=`${r.p.qty} unidades · ${brl(r.unit)} cada`;
   const unitSum=r.parts.reduce((a,x)=>a+x[1],0)||1;
   const st=$("stack");st.textContent="";
@@ -276,7 +337,7 @@ function render(){
     const tr=document.createElement("tr");
     const a=document.createElement("td");const dot=document.createElement("span");dot.className="dot";dot.style.background=`var(${c})`;
     a.appendChild(dot);a.appendChild(document.createTextNode(n));const sm=document.createElement("small");sm.textContent=sub;a.appendChild(sm);
-    const b=document.createElement("td");b.textContent=brl(v*r.p.qty);
+    const b=document.createElement("td");b.textContent=brl(v);
     tr.append(a,b);bd.appendChild(tr);
   });
   const top=[...r.parts].sort((a,b)=>b[1]-a[1])[0];
@@ -300,7 +361,7 @@ function renderSaved(){
     const row=document.createElement("div");row.className="item";
     const nm=document.createElement("div");nm.className="nm";
     const b=document.createElement("b");b.textContent=it.name||"Sem nome";
-    const sm=document.createElement("small");sm.textContent=`${fmt(it.grams)} g · ${fmtH(it.hours+it.mins/60)} · custo ${brl(it.total)}`;
+    const sm=document.createElement("small");sm.textContent=`${it.qty>1?fmt(it.qty)+" un. · ":""}${fmt(it.grams)} g · ${fmtH(it.hours+it.mins/60)} · custo ${brl(it.total)}`;
     nm.append(b,sm);
     const pr=document.createElement("span");pr.className="pr";pr.textContent=brl(it.price);
     const open=document.createElement("button");open.type="button";open.textContent="Abrir";
